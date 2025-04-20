@@ -12,7 +12,7 @@
             background: linear-gradient(to bottom, #FFFFCC, #FFCC66); /* Жёлтый градиент */
             color: #333;
             text-align: center;
-            min-height: 100vh;
+            min-height: 100vh; /* Зафиксированная минимальная высота */
             display: grid;
             place-items: center;
             overflow-x: hidden;
@@ -25,7 +25,7 @@
 
         /* Логотип и главное изображение */
         h1 {
-            font-size: 1.5em; /* Компактный размер заголовка */
+            font-size: 1.5em; /* Читабельный размер текста */
             color: #8b4513;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
@@ -41,7 +41,7 @@
 
         /* Главное изображение печенья */
         img {
-            max-width: 150px; /* Удобный размер для тапов */
+            max-width: 150px; /* Большой размер для комфорта тапов */
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             border-radius: 50%;
             transition: transform 0.3s ease-in-out;
@@ -78,7 +78,7 @@
 
         /* Счётчик полученных печенек */
         #coins {
-            font-size: 1.8em; /* Удобный размер текста */
+            font-size: 1.8em; /* Удобный размер счётчика */
             font-weight: bold;
             margin-top: 10px;
             color: #cc6600;
@@ -90,12 +90,13 @@
             border-radius: 5px;
             color: white;
             background-color: #ff6347;
-            font-size: 16px; /* Легко распознаваемый текст */
+            font-size: 16px; /* Удобный размер текста */
             transition: all 0.3s ease-in-out;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
-        button:hover {
+        button:hover,
+        button:focus {
             transform: scale(1.1);
             background-color: #ff4500;
         }
@@ -124,18 +125,18 @@
             padding: 10px;
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            visibility: hidden;
+            visibility: hidden; /* Скрыть меню настроек по умолчанию */
             opacity: 0;
             transition: visibility 0.3s, opacity 0.3s;
         }
 
-        #settings-toggle.open ~ #settings-menu {
+        #settings-menu.visible {
             visibility: visible;
             opacity: 1;
         }
 
         /* Кнопка открытия меню настроек */
-        #settings-toggle {
+        #settings-button {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -165,66 +166,47 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Частицы печенек */
-        .particle {
-            position: absolute;
-            background-color: #FFC0CB;
-            border-radius: 50%;
-            opacity: 0;
-            transform: translateX(-50%) translateY(-50%);
-            animation: particleAnim 1s ease-in-out both;
+        /* Песочница для вылетающих печений */
+        .particles-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Игнорируем взаимодействие с песочницей */
+            z-index: 1000;
         }
 
-        @keyframes particleAnim {
+        /* Мини-печеньки */
+        .flying-cookie {
+            position: absolute;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-50%);
+            animation: flyAway 1s ease-in-out forwards;
+            width: 20px; /* Уменьшили размер печенья */
+            height: 20px;
+        }
+
+        @keyframes flyAway {
             0% {
-                transform: translateX(-50%) translateY(-50%) scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(-50%) translateY(-50%) scale(1) translateY(-100px);
-                opacity: 0;
-            }
-        }
-
-        /* Дополнительные частицы конфетти */
-        .confetti {
-            position: absolute;
-            background-color: #FFDAB9;
-            border-radius: 50%;
-            opacity: 0;
-            transform: translateX(-50%) translateY(-50%);
-            animation: confettiAnim 1s ease-in-out both;
-        }
-
-        @keyframes confettiAnim {
-            0% {
-                transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(-50%) translateY(-50%) rotate(360deg) scale(1) translateY(-100px);
-                opacity: 0;
-            }
-        }
-
-        /* Вспышки света */
-        .flash {
-            position: absolute;
-            background-color: #FFFACD;
-            border-radius: 50%;
-            opacity: 0;
-            transform: translateX(-50%) translateY(-50%);
-            animation: flashAnim 0.5s ease-in-out both;
-        }
-
-        @keyframes flashAnim {
-            0%, 100% {
-                transform: translateX(-50%) translateY(-50%) scale(0);
-                opacity: 0;
-            }
-            50% {
                 transform: translateX(-50%) translateY(-50%) scale(1);
                 opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-50%) translateY(-100px) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Для мобильной версии кнопка должна быть большой и удобной */
+        @media screen and (max-width: 768px) {
+            button {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+
+            .cookie-container img {
+                max-width: 120px; /* Немного уменьшаем размер для небольших экранов */
             }
         }
 
@@ -241,17 +223,7 @@
         <p id="versionLabel">(ЭТО БЕТА-ВЕРСИЯ 1.1 НЕ СУДИТЕ СТРОГО)</p>
     </header>
 
-    <!-- Кнопка открытия меню настроек -->
-    <div id="settings-toggle" onclick="toggleMenu(this)" class="open">⚙ Настройки</div>
-
-    <!-- Раскрывающееся меню настроек -->
-    <div id="settings-menu">
-        <button onclick="toggleLanguage()">Русский / English</button>
-        <button onclick="toggleSound()">Выключить звук</button>
-        <button onclick="bindWallet()">Привязать кошелёк</button>
-    </div>
-
-    <!-- Основной контейнер -->
+    <!-- Основная игровая область -->
     <main>
         <section>
             <div class="cookie-container" onclick="clickCookie(event)">
@@ -260,13 +232,26 @@
             <p id="coins">Cookies: 0</p>
         </section>
 
-        <!-- Магазин -->
-        <h2 id="storeHeader">Магазин улучшений:</h2>
-        <div id="store"></div>
+        <!-- Меню настроек (скрытые по умолчанию) -->
+        <div id="settings-menu">
+            <button onclick="toggleLanguage()">Русский / English</button>
+            <button onclick="toggleSound()">Выключить звук</button>
+            <button onclick="bindWallet()">Привязать кошелёк</button>
+        </div>
+
+        <!-- Отдельная кнопка для открытия настроек -->
+        <button id="settings-button" onclick="toggleSettings()">Настройки ⚙</button>
     </main>
 
-    <!-- Достижения -->
+    <!-- Магазин -->
+    <h2 id="storeHeader">Магазин улучшений:</h2>
+    <div id="store"></div>
+
+    <!-- Блок для достижений -->
     <ul id="achievements"></ul>
+
+    <!-- Песочница для вылетающих печений -->
+    <div class="particles-layer"></div>
 
     <!-- Саундэффекты -->
     <audio id="click-sound" preload="auto">
@@ -292,6 +277,43 @@
             {nameRU: 'Средняя фабрика', nameEN: 'Medium Factory', initialCost: 1000, perLevel: 10, passBoost: 10}, // Третья фабрика
             {nameRU: 'Большая фабрика', nameEN: 'Big Factory', initialCost: 10000000, perLevel: 10000, passBoost: 10000} // Суперфабрика
         ];
+
+        // Список достижений
+        const achievements = [
+            {nameRU: 'Новичок', nameEN: 'Beginner', threshold: 10},
+            {nameRU: 'Пекарь', nameEN: 'Baker', threshold: 100},
+            {nameRU: 'Шеф-повар', nameEN: 'Chef', threshold: 1000},
+            {nameRU: 'Богатый человек', nameEN: 'Rich Man', threshold: 10000},
+            {nameRU: 'Миллионер', nameEN: 'Millionaire', threshold: 1000000},
+            {nameRU: 'Бизнесмен', nameEN: 'Businessman', threshold: 10000000},
+            {nameRU: 'Архимиллиардер', nameEN: 'Archmillionaire', threshold: 1000000000},
+            {nameRU: 'Магнат', nameEN: 'Magnate', threshold: 1000000000000},
+            {nameRU: 'Философ', nameEN: 'Philosopher', condition: hasMaxLevel()},
+            {nameRU: 'Император', nameEN: 'Emperor', condition: areAllUpgradesMaxed()}
+        ];
+
+        // Проверка выполненных достижений
+        function checkAchievements() {
+            const achievementsList = document.getElementById('achievements');
+            achievements.forEach((achievement, index) => {
+                // Проверяем, выполнены ли условия достижения и не показано ли оно ранее
+                if (
+                    !isAchievementShown(index) &&
+                    ((typeof achievement.threshold !== 'undefined' && cookies >= achievement.threshold) ||
+                     typeof achievement.condition === 'boolean' && achievement.condition)
+                ) {
+                    markAchievementAsShown(index); // Помечаем достижение как просмотренное
+                    const li = document.createElement('li');
+                    li.textContent = language === 'ru' ? achievement.nameRU : achievement.nameEN;
+                    achievementsList.append(li);
+
+                    // Сообщение о достижении отображается 5 секунд
+                    setTimeout(() => {
+                        achievementsList.removeChild(li);
+                    }, 5000);
+                }
+            });
+        }
 
         // Расчёт стоимости и эффекта от улучшения
         function calculateUpgrade(upgradeIndex) {
@@ -322,7 +344,7 @@
                     }<br/>
                     Следующая покупка: ${data.nextCost}<br/>
                     ${upgradeLevels[i] >= 100 ? '<span style="color:#FF0000;">MAX LVL</span>' : ''}<br/>
-                    <button onclick="buyUpgrade(${i}); createParticles(event.clientX, event.clientY)">Повысить (${data.nextCost})</button>
+                    <button onclick="buyUpgrade(${i}); flyingCookies(event.clientX, event.clientY)">Повысить (${data.nextCost})</button>
                 `;
                 storeDiv.appendChild(div);
             });
@@ -334,41 +356,35 @@
             cookies += baseIncrement + bonuses.powerBoost;
             saveState(); // Сохраняем состояние при каждом клике
             document.getElementById('coins').innerText = `Cookies: ${cookies}`;
-            checkAchievements();
-
-            // Создание множества частиц при клике
-            createParticles(e.clientX, e.clientY);
+            checkAchievements(); // Проверяем достижения после каждого клика
+            
+            // Печенье летят при клике
+            flyingCookies(e.clientX, e.clientY);
         }
 
-        // Создание большого количества различных частиц
-        function createParticles(x, y) {
-            for (let i = 0; i < 50; i++) { // Значительное увеличение числа частиц
-                const particleType = Math.random() < 0.5 ? '.particle' : '.confetti';
-                const particle = document.createElement('div');
-                particle.classList.add(particleType.substring(1)); // Без первой точки
+        // Вылетающая куча печений
+        function flyingCookies(x, y) {
+            const particlesLayer = document.querySelector('.particles-layer');
+            for (let i = 0; i < 20; i++) { // Чуть меньше печений
+                const flyingCookie = document.createElement('img');
+                flyingCookie.src = 'cookie.png';
+                flyingCookie.alt = 'Cookie';
+                flyingCookie.classList.add('flying-cookie');
 
-                // Конфигурация внешнего вида частицы
-                particle.style.left = `${x}px`;
-                particle.style.top = `${y}px`;
-                particle.style.width = `${Math.random() * 15 + 5}px`;
-                particle.style.height = `${Math.random() * 15 + 5}px`;
-                particle.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Случайный цвет
+                // Начальное положение у мыши
+                flyingCookie.style.left = `${x}px`;
+                flyingCookie.style.top = `${y}px`;
+                
+                // Различные направления полёта
+                const angle = Math.random() * 360;
+                flyingCookie.style.transformOrigin = 'center';
+                flyingCookie.style.transform = `rotate(${angle}deg) translateX(-50%) translateY(-50%)`;
 
-                document.body.append(particle);
+                particlesLayer.appendChild(flyingCookie);
                 setTimeout(() => {
-                    document.body.removeChild(particle);
+                    particlesLayer.removeChild(flyingCookie);
                 }, 1000);
             }
-
-            // Вспышка света
-            const flash = document.createElement('div');
-            flash.classList.add('flash');
-            flash.style.left = `${x}px`;
-            flash.style.top = `${y}px`;
-            document.body.append(flash);
-            setTimeout(() => {
-                document.body.removeChild(flash);
-            }, 500);
         }
 
         // Покупка улучшения
@@ -405,49 +421,27 @@
             document.getElementById('coins').innerText = `Cookies: ${cookies}`;
         }, 5000); // Каждые 5 секунд добавляем пассивный доход
 
-        // Проверка достижений
-        const achievements = [
-            {nameRU: 'Новичок', nameEN: 'Beginner', threshold: 10},
-            {nameRU: 'Пекарь', nameEN: 'Baker', threshold: 100},
-            {nameRU: 'Шеф-повар', nameEN: 'Chef', threshold: 1000},
-            {nameRU: 'Богатый человек', nameEN: 'Rich Man', threshold: 10000},
-            {nameRU: 'Миллионер', nameEN: 'Millionaire', threshold: 1000000},
-            {nameRU: 'Бизнесмен', nameEN: 'Businessman', threshold: 10000000},
-            {nameRU: 'Архимиллиардер', nameEN: 'Archmillionaire', threshold: 1000000000},
-            {nameRU: 'Магнат', nameEN: 'Magnate', threshold: 1000000000000},
-            {nameRU: 'Философ', nameEN: 'Philosopher', condition: hasMaxLevel()},
-            {nameRU: 'Император', nameEN: 'Emperor', condition: areAllUpgradesMaxed()}
-        ];
-
-        function checkAchievements() {
-            const achievementsList = document.getElementById('achievements');
-            achievements.forEach((achievement, index) => {
-                if (!achievement.unlocked &&
-                   ((typeof achievement.threshold !== 'undefined' && cookies >= achievement.threshold) ||
-                    typeof achievement.condition === 'boolean' && achievement.condition))
-                {
-                    const li = document.createElement('li');
-                    li.textContent = language === 'ru' ? achievement.nameRU : achievement.nameEN;
-                    achievementsList.append(li);
-
-                    // Временное появление достижения (5 секунд)
-                    setTimeout(() => {
-                        achievementsList.removeChild(li);
-                    }, 5000);
-
-                    achievement.unlocked = true;
-                }
-            });
-        }
-
-        // Максимальная степень улучшения
+        // Максимальное улучшение
         function hasMaxLevel() {
             return upgradeLevels.some(level => level === 100);
         }
 
-        // Все улучшения доведены до предела
+        // Все улучшения завершены
         function areAllUpgradesMaxed() {
             return upgradeLevels.every(level => level === 100);
+        }
+
+        // Проверка наличия определённого достижения
+        function isAchievementShown(index) {
+            const shownAchievements = JSON.parse(localStorage.getItem('shownAchievements') || '{}');
+            return shownAchievements.hasOwnProperty(index.toString());
+        }
+
+        // Помечаем достижение как просмотренное
+        function markAchievementAsShown(index) {
+            const shownAchievements = JSON.parse(localStorage.getItem('shownAchievements') || '{}');
+            shownAchievements[index.toString()] = true;
+            localStorage.setItem('shownAchievements', JSON.stringify(shownAchievements));
         }
 
         // Переключение языка
@@ -474,9 +468,10 @@
             alert(language === 'ru' ? "Скоро появится!" : "Coming soon!");
         }
 
-        // Раскрывание меню настроек
-        function toggleMenu(btn) {
-            btn.classList.toggle('open');
+        // Функция открытия/закрытия меню настроек
+        function toggleSettings() {
+            const settingsMenu = document.getElementById('settings-menu');
+            settingsMenu.classList.toggle('visible'); // Меняем класс, который делает меню видимым
         }
 
         // Сохранение текущего состояния игры
@@ -500,10 +495,10 @@
 
         // Закрытие меню при клике вне области
         document.addEventListener('click', (event) => {
-            const settingsToggle = document.getElementById('settings-toggle');
+            const settingsButton = document.getElementById('settings-button');
             const settingsMenu = document.getElementById('settings-menu');
-            if(!settingsMenu.contains(event.target) && !settingsToggle.contains(event.target)) {
-                settingsToggle.classList.remove('open');
+            if(settingsButton !== event.target && !settingsMenu.contains(event.target)) {
+                settingsMenu.classList.remove('visible'); // Скрываем меню, если щелчок вне его
             }
         });
 
