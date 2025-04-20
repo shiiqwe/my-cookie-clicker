@@ -25,7 +25,7 @@
 
         /* Логотип и главное изображение */
         h1 {
-            font-size: 2em; /* Уменьшенный размер шрифта для телефонов */
+            font-size: 1.5em; /* Компактный размер заголовка */
             color: #8b4513;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
@@ -41,7 +41,7 @@
 
         /* Главное изображение печенья */
         img {
-            max-width: 150px; /* Уменьшен размер картинки для удобства на смартфоне */
+            max-width: 150px; /* Удобный размер для тапов */
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             border-radius: 50%;
             transition: transform 0.3s ease-in-out;
@@ -78,7 +78,7 @@
 
         /* Счётчик полученных печенек */
         #coins {
-            font-size: 2em;
+            font-size: 1.8em; /* Удобный размер текста */
             font-weight: bold;
             margin-top: 10px;
             color: #cc6600;
@@ -90,7 +90,7 @@
             border-radius: 5px;
             color: white;
             background-color: #ff6347;
-            font-size: 16px;
+            font-size: 16px; /* Легко распознаваемый текст */
             transition: all 0.3s ease-in-out;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
@@ -102,8 +102,8 @@
 
         /* Карточки улучшений */
         .store-item {
-            display: block; /* Преобразование в вертикальное размещение */
-            width: calc(100% - 20px); /* Ширина для комфортного размещения на экране смартфона */
+            display: block; /* Одностолбцовое представление */
+            width: calc(100% - 20px); /* Занимает почти весь экран */
             height: auto;
             border: 1px solid #333;
             margin: 10px auto;
@@ -183,6 +183,48 @@
             100% {
                 transform: translateX(-50%) translateY(-50%) scale(1) translateY(-100px);
                 opacity: 0;
+            }
+        }
+
+        /* Дополнительные частицы конфетти */
+        .confetti {
+            position: absolute;
+            background-color: #FFDAB9;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-50%);
+            animation: confettiAnim 1s ease-in-out both;
+        }
+
+        @keyframes confettiAnim {
+            0% {
+                transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-50%) translateY(-50%) rotate(360deg) scale(1) translateY(-100px);
+                opacity: 0;
+            }
+        }
+
+        /* Вспышки света */
+        .flash {
+            position: absolute;
+            background-color: #FFFACD;
+            border-radius: 50%;
+            opacity: 0;
+            transform: translateX(-50%) translateY(-50%);
+            animation: flashAnim 0.5s ease-in-out both;
+        }
+
+        @keyframes flashAnim {
+            0%, 100% {
+                transform: translateX(-50%) translateY(-50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translateX(-50%) translateY(-50%) scale(1);
+                opacity: 1;
             }
         }
 
@@ -294,24 +336,39 @@
             document.getElementById('coins').innerText = `Cookies: ${cookies}`;
             checkAchievements();
 
-            // Частицы печенек при клике
+            // Создание множества частиц при клике
             createParticles(e.clientX, e.clientY);
         }
 
-        // Частицы печенек
+        // Создание большого количества различных частиц
         function createParticles(x, y) {
-            for (let i = 0; i < 20; i++) { // Больше частиц
+            for (let i = 0; i < 50; i++) { // Значительное увеличение числа частиц
+                const particleType = Math.random() < 0.5 ? '.particle' : '.confetti';
                 const particle = document.createElement('div');
-                particle.classList.add('particle');
+                particle.classList.add(particleType.substring(1)); // Без первой точки
+
+                // Конфигурация внешнего вида частицы
                 particle.style.left = `${x}px`;
                 particle.style.top = `${y}px`;
                 particle.style.width = `${Math.random() * 15 + 5}px`;
                 particle.style.height = `${Math.random() * 15 + 5}px`;
+                particle.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Случайный цвет
+
                 document.body.append(particle);
                 setTimeout(() => {
                     document.body.removeChild(particle);
                 }, 1000);
             }
+
+            // Вспышка света
+            const flash = document.createElement('div');
+            flash.classList.add('flash');
+            flash.style.left = `${x}px`;
+            flash.style.top = `${y}px`;
+            document.body.append(flash);
+            setTimeout(() => {
+                document.body.removeChild(flash);
+            }, 500);
         }
 
         // Покупка улучшения
