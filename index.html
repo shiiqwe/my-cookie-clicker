@@ -255,8 +255,9 @@
         function calculateUpgrade(upgradeIndex) {
             const level = upgradeLevels[upgradeIndex];
             return {
-                currentEffect: upgrades[upgradeIndex].perLevel * level,
-                nextCost: upgrades[upgradeIndex].initialCost * Math.pow(2, level) // Удваивание цены
+                currentEffect: upgrades[upgradeIndex].perLevel * level, // Активный эффект от уровня
+                nextCost: upgrades[upgradeIndex].initialCost * Math.pow(2, level), // Стоимость следующего уровня
+                passiveBoost: upgrades[upgradeIndex].passBoost * level // Пассивный прирост от уровня
             };
         }
 
@@ -272,7 +273,11 @@
                 div.innerHTML = `
                     <b>${language === 'ru' ? upgrade.nameRU : upgrade.nameEN}</b><br/>
                     Уровень: ${upgradeLevels[i]}/100<br/>
-                    Эффект: +${data.currentEffect}<br/>
+                    Эффект: +${
+                        upgrade.perLevel > 0 ?
+                            data.currentEffect :
+                            data.passiveBoost
+                    }<br/>
                     Следующая покупка: ${data.nextCost}<br/>
                     ${upgradeLevels[i] >= 100 ? '<span style="color:#FF0000;">MAX LVL</span>' : ''}<br/>
                     <button onclick="buyUpgrade(${i}); createParticles(event.clientX, event.clientY)">Повысить (${data.nextCost})</button>
@@ -330,7 +335,7 @@
             for (let i = 0; i < upgrades.length; i++) {
                 const data = calculateUpgrade(i);
                 powerBoost += data.currentEffect;
-                passiveBoost += upgrades[i].passBoost * upgradeLevels[i];
+                passiveBoost += data.passiveBoost; // Учли пассивный прирост от каждого улучшения
             }
             return {powerBoost, passiveBoost};
         }
