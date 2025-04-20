@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Cookie Clicker — CCCoin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bungee+Shade&display=swap" rel="stylesheet">
+    <style>
+        /* Общий стиль игры */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: radial-gradient(#ffebcd, #faf0e6);
+            color: #333;
+            text-align: center;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            overflow-x: hidden;
+        }
+
+        /* Шапка игры */
+        header {
+            margin-bottom: 20px;
+        }
+
+        /* Логотип и главное изображение */
+        h1 {
+            font-family: 'Bungee Shade', cursive;
+            font-size: 3em;
+            color: #8b4513;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Контейнер для клика по печенью */
+        .cookie-container {
+            position: relative;
+            cursor: pointer;
+            animation-duration: 0.5s;
+            animation-name: bounce;
+            animation-timing-function: cubic-bezier(.4,.2,.2,1);
+        }
+
+        /* Главное изображение печенья */
+        img {
+            max-width: 200px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border-radius: 50%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* При нажатии на изображение печенья */
+        .cookie-container:active img {
+            transform: scale(0.9);
+        }
+
+        /* Анимация прыжка печенья */
+        @keyframes bounce {
+            from {
+                transform: translateY(-10%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Счётчик полученных печенек */
+        #coins {
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #cc6600;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* Стили для кнопок и магазинов */
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            background-color: #ff6347;
+            font-size: 16px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            background-color: #ff4500;
+        }
+
+        /* Карточки улучшений */
+        .store-item {
+            display: inline-block;
+            width: 150px;
+            height: 150px;
+            border: 1px solid #333;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+            vertical-align: top;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+
+        /* Окно настроек */
+        #settings {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #settings button {
+            margin-left: 10px;
+        }
+
+        /* Список достижений */
+        #achievements {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            z-index: 1000;
+        }
+
+        #achievements li {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #achievements span {
+            opacity: 0.5;
+            font-size: 12px;
+        }
+
+        #achievements input[type='checkbox'] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #achievements input[type='checkbox']:checked {
+            background-color: green;
+        }
+
+        /* Саундэффекты */
+        audio {
+            display: none;
+        }
+
+        /* Слот-машина */
+        #slotMachine {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        .reel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            width: 100px;
+            background-color: #333;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .symbol {
+            font-size: 60px;
+            line-height: 1;
+            margin: 5px 0;
+            color: gold;
+        }
+
+        #spinBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #spinBtn:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <h1>Cookie Clicker — CCCoin</h1>
+    </header>
+
+    <!-- Основной контейнер -->
+    <main>
+        <section>
+            <div class="cookie-container" onclick="clickCookie()">
+                <img src="cookie.png" alt="Cookie" style="width: 200px; height: auto;" />
+            </div>
+            <p id="coins">Cookies: 0</p>
+        </section>
+
+        <!-- Магазин -->
+        <h2>Магазин улучшений:</h2>
+        <div id="store"></div>
+
+        <!-- Слот-машина -->
+        <h2>Слот-машина</h2>
+        <div id="slotMachine">
+            <div class="reel"><div class="symbol" id="reel1"></div></div>
+            <div class="reel"><div class="symbol" id="reel2"></div></div>
+            <div class="reel"><div class="symbol" id="reel3"></div></div>
+        </div>
+        <button id="spinBtn">Спин (стоимость: 1 тонну)</button>
+        <div id="result"></div>
+    </main>
+
+    <!-- Настройки -->
+    <div id="settings">
+        <button onclick="toggleSound()">Выключить звук</button>
+        <button onclick="bindWallet()">Привязать кошелёк</button>
+    </div>
+
+    <!-- Достижения -->
+    <ul id="achievements"></ul>
+
+    <!-- Саундэффекты -->
+    <audio id="click-sound" preload="auto">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Музыкальное сопровождение -->
+    <audio id="background-music" loop autoplay muted>
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        let cookies = 0;
+        let baseIncrement = 1;
+        let passiveIncome = 0;
+        let magicWandUsed = false; // Признак использования волшебной палочки
+        let upgradeLevels = [0, 0, 0, 0]; // Четвёртый уровень для волшебной палочки
+        const upgrades = [
+            {name: 'Общая мощность', initialCost: 10, effect: 1, multiplier: 2},
+            {name: 'Мощь клика', initialCost: 100, effect: 3, multiplier: 9},
+            {name: 'Пассивный доход', initialCost: 10000, effect: 1, multiplier: 10000},
+            {name: 'Волшебная палочка', initialCost: 10000000, effect: 10000, multiplier: 1} // Особая редкая вещь
+        ];
+        const achievements = [
+            {name: 'Новичок', description: 'Получено 10 печеней'},
+            {name: 'Пекарь', description: 'Получено 100 печеней'},
+            {name: 'Шеф-повар', description: 'Получено 1000 печеней'},
+            {name: 'Богатый человек', description: 'Получено 10 000 печеней'},
+            {name: 'Миллионер', description: 'Получено 1 миллион печеней'},
+            {name: 'Бизнесмен', description: 'Получено 10 миллионов печеней'},
+            {name: 'Архимиллиардер', description: 'Получено 1 миллиард печеней'},
+            {name: 'Магнат', description: 'Получено 1 триллион печеней'},
+            {name: 'Философ', description: 'Имеете хотя бы одно максимальное улучшение'},
+            {name: 'Император', description: 'Имеете все улучшения на максимальном уровне'}
+        ];
+
+        // Расчёт стоимости и эффекта от улучшения
+        function calculateUpgrade(upgradeIndex) {
+            const level = upgradeLevels[upgradeIndex];
+            return {
+                currentEffect: upgrades[upgradeIndex].effect,
+                nextCost: upgrades[upgradeIndex].initialCost
+            };
+        }
+
+        // Функция клика по печенью
+        function clickCookie() {
+            cookies += baseIncrement;
+            document.getElementById('coins').innerText = `Cookies: ${cookies}`;
+            checkAchievements();
+
+            // Применяется усиление от волшебной палочки
+            if (magicWandUsed) {
+                cookies += 10000; // Большой бонус от волшебной палочки
+            }
+
+            // Воспроизводим звук клика
+            const clickAudio = document.getElementById('click-sound');
+            clickAudio.play();
+        }
+
+        // Автоматическая выдача пассивных доходов
+        setInterval(() => {
+            cookies += passiveIncome;
+            document.getElementById('coins').innerText = `Cookies: ${cookies}`;
+        }, 5000); // Каждые 5 секунд добавляем пассивные очки
+
+        // Генерация магазина
+        function generateStore() {
+            const storeDiv = document.getElementById('store');
+            storeDiv.innerHTML = '';
+
+            upgrades.forEach((upgrade, i) => {
+                const data = calculateUpgrade(i);
+                let div = document.createElement('div');
+                div.className = 'store-item';
+                div.innerHTML = `
+                    <b>${upgrade.name}</b><br/>
+                    Уровень: ${upgradeLevels[i]}/100<br/>
+                    Эффект: +${data.currentEffect}<br/>
+                    Следующая покупка: ${data.nextCost}<br/>
+                    ${upgradeLevels[i] >= 100 ? '<span style="color:#FF0000;">MAX LVL</span>' : ''}<br/>
+                    <button onclick="buyUpgrade(${i})">Повысить (${data.nextCost})</button>
+                `;
+                storeDiv.appendChild(div);
+            });
+        }
+
+        // Покупка улучшения
+        function buyUpgrade(upgradeIndex) {
+            const data = calculateUpgrade(upgradeIndex);
+            if(cookies >= data.nextCost && upgradeLevels[upgradeIndex] < 100){
+                cookies -= data.nextCost;
+                upgradeLevels[upgradeIndex]++;
+                
+                switch (upgradeIndex) {
+                    case 0: // Общая мощность
+                        baseIncrement += data.currentEffect;
+                        break;
+                    case 1: // Мощь клика
+                        baseIncrement += data.currentEffect;
+                        break;
+                    case 2: // Пассивный доход
+                        passiveIncome++; // Увеличение пассивного дохода ровно на 1
+                        break;
+                    case 3: // Волшебная палочка
+                        magicWandUsed = true; // Используем волшебную палочку
+                        break;
+                }
+
+                document.getElementById('coins').innerText = `Cookies: ${cookies}`;
+                generateStore(); // Перегенерация магазина для обновления интерфейса
+            }
+        }
+
+        // Проверка достижений
+        function checkAchievements() {
+            const achievementsList = document.getElementById('achievements');
+
+            achievements.forEach((achievement, index) => {
+                if (!achievement.completed &&
+                    ((index === 0 && cookies >= 10) ||
+                     (index === 1 && cookies >= 100) ||
+                     (index === 2 && cookies >= 1000) ||
+                     (index === 3 && cookies >= 10000) ||
+                     (index === 4 && cookies >= 1000000) ||
+                     (index === 5 && cookies >= 10000000) ||
+                     (index === 6 && cookies >= 1000000000) ||
+                     (index === 7 && cookies >= 1000000000000) ||
+                     (index === 8 && hasMaxLevel()) ||
+                     (index === 9 && areAllUpgradesMaxed())))
+                 {
+                    // Только первый раз ставим галочку
+                    const li = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.id = `achievement-${index}`;
+                    checkbox.checked = true;
+                    checkbox.disabled = true;
+                    checkbox.style.cursor = 'default';
+
+                    li.append(checkbox);
+                    li.append(document.createTextNode(` ${achievement.name}`));
+
+                    achievementsList.append(li);
+
+                    // Помечаем достижение как завершённое
+                    achievement.completed = true;
+                }
+            });
+        }
+
+        // Вспомогательные функции для достижений
+        function hasMaxLevel() {
+            return upgradeLevels.some(level => level === 100);
+        }
+
+        function areAllUpgradesMaxed() {
+            return upgradeLevels.every(level => level === 100);
+        }
+
+        // Управление звуком
+        function toggleSound() {
+            const soundCheckbox = document.getElementById('soundToggle');
+            const bgMusic = document.getElementById('background-music');
+            if(soundCheckbox.checked) {
+                bgMusic.volume = 0.5; // Устанавливаем нормальный уровень громкости
+                bgMusic.muted = false; // Включаем музыку
+            } else {
+                bgMusic.volume = 0; // Полностью отключаем музыку
+                bgMusic.muted = true; // Отключаем музыку
+            }
+        }
+
+        // Привязка кошелька
+        function bindWallet() {
+            alert("Ваш адрес кошелька успешно привязан!");
+        }
+
+        // Добавляем звук нажатия кнопки
+        document.querySelector('.cookie-container').addEventListener('click', () => {
+            const audio = new Audio('click.mp3');
+            audio.play();
+        });
+
+        // Генерируем магазин при загрузке страницы
+        window.onload = function() {
+            generateStore();
+        };
+
+        // Логика слотовой машины
+        const symbols = ['🍇', '🍓', '🍉', '🍒', '🍋', '🍌', '🍇', '🍓', '🍉', '🍒', '🍋', '🍌'];
+        const resultDisplay = document.getElementById('result');
+        const spinBtn = document.getElementById('spinBtn');
+        const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function spinReels() {
+            const shuffledSymbols = shuffleArray([...symbols]);
+            reels.forEach(reel => {
+                reel.textContent = shuffledSymbols.pop();
+            });
+        }
+
+        function checkWinningCombinations() {
+            const values = reels.map(reel => reel.textContent);
+            if (values[0] === values[1] && values[1] === values[2]) {
+                if (values[0] === '🍇') return 100; // Three cherries
+                if (values[0] === '🍓') return 50; // Three lemons
+                return 10; // Any other matching combination
+            } else if (values.includes(values[0])) {
+                return 5; // Two pairs of same fruit
+            } else if (values.includes(values[1])) {
+                return 2; // Single pair
+            }
+            return 0;
+        }
+
+        spinBtn.addEventListener('click', () => {
+            if (cookies >= 1) {
+                cookies -= 1;
+                document.getElementById('coins').innerText = `Cookies: ${cookies}`;
+                spinBtn.disabled = true;
+                spinReels();
+                const winningAmount = checkWinningCombinations();
+                if (winningAmount > 0) {
+                    cookies += winningAmount;
+                    resultDisplay.textContent = `Вы выиграли ${winningAmount} тонн!`;
+                } else {
+                    resultDisplay.textContent = 'Вы ничего не выиграли.';
+                }
+                setTimeout(() => {
+                    spinBtn.disabled = false;
+                }, 2000);
+            } else {
+                resultDisplay.textContent = 'Недостаточно средств!';
+            }
+        });
+    </script>
+</body>
+</html>
