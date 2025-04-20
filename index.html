@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cookie Clicker — CCCoin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Основной стиль игры */
         body {
-            font-family: 'Bungee Spice', cursive;
+            font-family: 'Roboto', sans-serif;
             background: linear-gradient(to bottom, #FFFFCC, #FFCC66); /* Жёлтый градиент */
             color: #333;
             text-align: center;
@@ -25,7 +25,7 @@
 
         /* Логотип и главное изображение */
         h1 {
-            font-size: 3em;
+            font-size: 2em; /* Уменьшенный размер шрифта для телефонов */
             color: #8b4513;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
@@ -41,7 +41,7 @@
 
         /* Главное изображение печенья */
         img {
-            max-width: 200px;
+            max-width: 150px; /* Уменьшен размер картинки для удобства на смартфоне */
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             border-radius: 50%;
             transition: transform 0.3s ease-in-out;
@@ -78,9 +78,9 @@
 
         /* Счётчик полученных печенек */
         #coins {
-            font-size: 2.5em;
+            font-size: 2em;
             font-weight: bold;
-            margin-top: 20px;
+            margin-top: 10px;
             color: #cc6600;
         }
 
@@ -90,7 +90,7 @@
             border-radius: 5px;
             color: white;
             background-color: #ff6347;
-            font-size: 18px;
+            font-size: 16px;
             transition: all 0.3s ease-in-out;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
@@ -102,11 +102,11 @@
 
         /* Карточки улучшений */
         .store-item {
-            display: inline-block;
-            width: 150px;
-            height: 150px;
+            display: block; /* Преобразование в вертикальное размещение */
+            width: calc(100% - 20px); /* Ширина для комфортного размещения на экране смартфона */
+            height: auto;
             border: 1px solid #333;
-            margin: 10px;
+            margin: 10px auto;
             padding: 10px;
             text-align: center;
             vertical-align: top;
@@ -160,7 +160,7 @@
         #achievements li {
             display: block;
             margin-bottom: 5px;
-            font-size: 1.4em;
+            font-size: 1.2em;
             color: #8b4513;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
@@ -213,7 +213,7 @@
     <main>
         <section>
             <div class="cookie-container" onclick="clickCookie(event)">
-                <img src="cookie.png" alt="Cookie" style="width: 200px; height: auto;" />
+                <img src="cookie.png" alt="Cookie" style="width: 150px; height: auto;" />
             </div>
             <p id="coins">Cookies: 0</p>
         </section>
